@@ -1,3 +1,7 @@
+extern crate rand;
+
+use rand::{Rng, StdRng};
+
 #[macro_use]
 mod encoder;
 mod decoder;
@@ -39,4 +43,10 @@ pub struct SourceBlock<'a> {
 pub struct Source<'a> {
     // Entirety of decoded source data
     data: Vec<&'a SourceBlock<'a>>,
+}
+
+/// Get a degree from the distribution that is between 0 and n (exclusive)
+pub fn get_degree(n: u64, mut rng: StdRng) -> u64 {
+    // TODO: Create an actual degree disribution so that it sometimes nears n, but most of the time nears 0
+    rng.next_u64() % n
 }
