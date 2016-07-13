@@ -1,7 +1,7 @@
 //! Luby Transform encoder
 extern crate rand;
 
-use rand::{Rng, StdRng};
+use rand::{Rng, SeedableRng, StdRng};
 use std::fs::File;
 use std::io;
 use std::io::Read;
@@ -10,6 +10,7 @@ use std::path::Path;
 use Header;
 use Packet;
 use RawEncodedBlock;
+
 
 struct Source {
     blocks: Vec<Vec<u8>>,
@@ -51,7 +52,9 @@ impl Source {
 
     pub fn generate_packet(&mut self) -> Packet {
         // Generate seed
-        let seed = self.rng.next_u64();
+        let seed: &[_] = &[self.rng.next_u64() as usize];
+        let seedableRng: StdRng = SeedableRng::from_seed(seed);
+
         // TODO: Use seed to get degree for source
         // TODO: Encode data from degree source blocks
         // TODO: Build packet
@@ -62,7 +65,7 @@ impl Source {
             },
             block: RawEncodedBlock {
                 data: vec![0; self.block_size as usize],
-                seed: seed,
+                seed: seed[0] as u64,
             }
         }
     }
